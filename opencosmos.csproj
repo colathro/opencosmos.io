@@ -10,4 +10,7 @@
     <Folder Include="Pages\Documentation\" />
     <Folder Include="Controllers\" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
+  </ItemGroup>
 </Project>

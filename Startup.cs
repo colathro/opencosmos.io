@@ -8,17 +8,19 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
 
 namespace opencosmos
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration _config { get; }
 
-        public IConfiguration Configuration { get; }
+        public Startup(IConfiguration config)
+        {
+            _config = config;
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -26,6 +28,13 @@ namespace opencosmos
             services.AddRazorPages().AddRazorOptions(options =>
             {
                 options.PageViewLocationFormats.Add("/Pages/Documentation/{0}.cshtml");
+            });
+            services.AddControllers();
+            services.AddLogging(builder =>
+            {
+                builder.AddApplicationInsights(Environment.GetEnvironmentVariable("APP_INSIGHTS"));
+                builder.AddFilter<ApplicationInsightsLoggerProvider>("", LogLevel.Information);
+                builder.AddFilter<ApplicationInsightsLoggerProvider>("Microsoft", LogLevel.Error);
             });
         }
 
@@ -53,7 +62,7 @@ namespace opencosmos
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
-                endpoints.MapDefaultControllerRoute();
+                endpoints.MapControllers();
             });
         }
     }
